@@ -2,8 +2,8 @@
 1. General Information
    * Session ID: 20261103_phase0_baseline
    * Date: 2026-11-04
-   * Start Time (UTC): 2026-11-04 23:20:27.410 UTC
-   * End Time (UTC): 2026-11-03 23:23:06.410 UTC
+   * Start Time (UTC): 2026-11-04 18:13:09.967 UTC
+   * End Time (UTC): 2026-11-04 18:13:14.000 UTC
    * Protocol Phase: Phase 0 Baseline (Calm Day)
 2. Location and Environment
    * Site Name: Field beside Hoblitzelle Hall (HH)
