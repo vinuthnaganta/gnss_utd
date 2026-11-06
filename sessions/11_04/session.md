@@ -1,4 +1,4 @@
-# Session Metadata: 2 Minute Test
+# Session Metadata: Phase 0 Baseline Calm
 1. General Information
    * Session ID: 20261103_phase0_baseline
    * Date: 2026-11-04
