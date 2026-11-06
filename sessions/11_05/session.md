@@ -17,7 +17,8 @@
    * Logger App Version: Android GNSS Logger v3.1.1.3
 4. Setup
    * Team Members Present: Vinuthna, Rishi
-   * Setup Description: Phone static on ground, top of phone points North, clear sky view
+   * Setup Description: Phone static on ground, top of phone points North, clear sky view, walking distance 6m
+   * Walker: Vinuthna, Direction: East towards West, Walking Speed: normal (~10 steps)
    * Tested Distances: 0.5m, 1.0m, 2.0m, 4.0m, 8.0m, 12.0m with 10 passes each
 5. Files and Checklist (Appendix A)
    * P1-10/gnss_log.txt
