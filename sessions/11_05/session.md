@@ -20,7 +20,7 @@
    * Setup Description: Phone static on ground, top of phone points North, clear sky view
    * Tested Distances: 0.5m, 1.0m, 2.0m, 4.0m, 8.0m, 12.0m with 10 passes each
 5. Files and Checklist (Appendix A)
-   * gnss_log.txt
+   * P1-10/gnss_log.txt
    * session.md
    * event_log.csv
 6. Observations and Notes
