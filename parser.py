@@ -1,7 +1,7 @@
 import pandas as pd
 from pathlib import Path
 
-filename = "gnss_files/gnss_log_2026_11_03_17_20_27.txt"
+filename = "gnss_files/gnss_log_2026_11_04_12_13_10.txt"
 
 CONSTELLATIONS = {0: "UNKNOWN", 1: "GPS", 2: "SBAS", 3: "GLONASS",
                   4: "QZSS", 5: "BEIDOU", 6: "GALILEO", 7: "IRNSS"}
@@ -82,4 +82,4 @@ out = out[["epoch_id", "utc_time", "Constellation", "Svid", "band",
            "CarrierFrequencyHz", "Cn0DbHz", "AzimuthDegrees", "ElevationDegrees"]]
 
 Path("results").mkdir(exist_ok=True)
-out.to_csv("results/gnss_signals.csv", index=False)
+out.to_csv("results/gnss_signals_calm_day_phase_0.csv", index=False)
