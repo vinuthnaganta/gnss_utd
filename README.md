@@ -7,9 +7,20 @@ This project investigates device-free human body sensing. If a phone lies on the
 Vinuthna Ganta, Rishindrasaireddy Vemireddy
 
 ## Current Status
-* **Phase:** Week 3 - Field Data Collection (Phases 1-4)
-* **Last Updated:** 2026-11-05
-* **Active Milestone:** Completing Phase 1 (Distance), Phase 2 (Direction, and Phase 3 (Body Size) field sessions
+
+* **Phase:** Week 5 - Event Aligned Plots
+
+* **Last Updated:** 2026-11-20
+
+* **Active Milestone:** Uploading all files, parsing data in batches, creating plots.
+
+## Session Protocol
+* For each session, take a site photo documenting the setup and weather.
+* Place phone in same general area with top of phone pointing to North and flat elevation (+/- 1 degree).
+* All other items not used in experiment placed at least 15 meters away.
+* Distance walked under conditions: Start and stop position is a total of 6 meters, with phone at center (3 meter point)
+* Recorder steps at least 3 meters away from phone once starting.
+* Once log has been started, wait 30 seconds before walker walks and 30 seconds after to then stop the log.
 
 ## Repository Structure
 * `0_papers/` - Literature PDF files and `papers.csv`
