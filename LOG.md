@@ -8,7 +8,7 @@
 ## 2026-11-04
 * **Activity:** Completed recording Session 0 baseline for a calm weather day.
 * **Decided:** Upcoming Sessions schedule. Set up initial reference data under calm conditions for benchmark purposes.
-* **Next:** Record Session 1, 2, and 3.
+* **Next:** Record Session 1, 2.
 
 ## 2026-11-05
 * **Activity:** Completed recording Session 1, started recording Session 2
