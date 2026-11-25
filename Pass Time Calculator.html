@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pass Time Calculator</title>
+<style>
+:root{--bg:#f7f6f2;--card:#fff;--text:#1d1d1b;--muted:#6b6a64;--line:#dedcd3;--accent:#1f6f5c;--accent-text:#fff;--out:#eaf4f0;--bad:#b3261e;color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161715;--card:#1f201e;--text:#ecebe6;--muted:#9a998f;--line:#34352f;--accent:#4fb89c;--accent-text:#0e1a16;--out:#1c2b26;--bad:#f2867f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#161715;--card:#1f201e;--text:#ecebe6;--muted:#9a998f;--line:#34352f;--accent:#4fb89c;--accent-text:#0e1a16;--out:#1c2b26;--bad:#f2867f;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*:before,*:after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:22px;margin:0 0 4px}
+p.sub{color:var(--muted);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);text-align:left;padding:4px 6px;font-weight:600}
+td{padding:4px 6px;vertical-align:middle}
+input{width:100%;font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+input:focus{outline:2px solid var(--accent);outline-offset:-1px}
+input.err{border-color:var(--bad)}
+td.out{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;background:var(--out);border-radius:6px;white-space:nowrap}
+td.out.e{color:var(--bad);background:none;font-family:inherit;font-size:12px;white-space:normal}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:8px;padding:8px 14px;cursor:pointer}
+button.p{background:var(--accent);color:var(--accent-text);border-color:var(--accent);font-weight:600}
+.note{color:var(--muted);font-size:13px;margin-top:14px}
+.del{padding:4px 9px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<h1>Pass time calculator</h1>
+<p class="sub">Log start (UTC) + walker video times → start_utc, end_utc and closest approach.</p>
+<div class="card">
+<table>
+<thead><tr><th>Pass ID</th><th>Log start (UTC)</th><th>Walk start (s)</th><th>Walk end (s)</th><th>start_utc</th><th>end_utc</th><th>Closest approach</th><th></th></tr></thead>
+<tbody id="rows"></tbody>
+</table>
+<div class="bar">
+<button class="p" id="add">Add row</button>
+<button id="copy">Copy CSV</button>
+<button id="clear">Clear all</button>
+<span id="msg" class="note" style="margin:0;align-self:center"></span>
+</div>
+</div>
+<p class="note">Log start: paste the first <code>utc_time</code> for that log from your CSV (e.g. 2026-11-05T21:48:36.963Z) or just a time like 21:48:36.963. Walk times: seconds (35.82) or m:ss (0:35.82). Press Enter in the last box to add the next row. Results are rounded to 0.01 s. Closest approach is the midpoint of the walk.</p>
+</main>
+<script>
+const rowsEl=document.getElementById('rows');
+const pad=(n,w=2)=>String(n).padStart(w,'0');
+function parseStart(s){
+  s=s.trim();
+  let m=s.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2}(?:\.\d+)?)Z?$/);
+  if(m)return Date.UTC(+m[1],m[2]-1,+m[3],+m[4],+m[5],0)+parseFloat(m[6])*1000;
+  m=s.match(/^(\d{1,2}):(\d{2}):(\d{2}(?:\.\d+)?)$/);
+  if(m)return Date.UTC(1970,0,1,+m[1],+m[2],0)+parseFloat(m[3])*1000;
+  return NaN;
+}
+function parseOff(s){
+  s=s.trim();
+  let m=s.match(/^(\d+):(\d{1,2}(?:\.\d+)?)$/);
+  if(m)return +m[1]*60+parseFloat(m[2]);
+  return /^\d+(\.\d+)?$/.test(s)?parseFloat(s):NaN;
+}
+function fmt(ms){
+  ms=Math.round(ms/10)*10;
+  const d=new Date(ms);
+  return pad(d.getUTCHours())+':'+pad(d.getUTCMinutes())+':'+pad(d.getUTCSeconds())+'.'+pad(Math.floor(d.getUTCMilliseconds()/10));
+}
+function addRow(vals){
+  vals=vals||{};
+  const tr=document.createElement('tr');
+  tr.innerHTML='<td><input class="id" placeholder="s03_p01"></td><td><input class="ls" placeholder="2026-11-05T21:48:36.963Z"></td><td><input class="ws" inputmode="decimal" placeholder="35.82"></td><td><input class="we" inputmode="decimal" placeholder="43.34"></td><td class="out a"></td><td class="out b"></td><td class="out c"></td><td><button class="del" title="Remove row">✕</button></td>';
+  rowsEl.appendChild(tr);
+  tr.querySelectorAll('input').forEach(i=>i.addEventListener('input',()=>calc(tr)));
+  tr.querySelector('.we').addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();const n=addRow();n.querySelector('.id').focus();}
+  });
+  tr.querySelector('.del').addEventListener('click',()=>{tr.remove();if(!rowsEl.children.length)addRow();});
+  return tr;
+}
+function calc(tr){
+  const ls=tr.querySelector('.ls'),ws=tr.querySelector('.ws'),we=tr.querySelector('.we');
+  const a=tr.querySelector('.a'),b=tr.querySelector('.b'),c=tr.querySelector('.c');
+  [ls,ws,we].forEach(i=>i.classList.remove('err'));
+  [a,b,c].forEach(x=>{x.textContent='';x.classList.remove('e');});
+  if(!ls.value.trim()||!ws.value.trim()||!we.value.trim())return;
+  const base=parseStart(ls.value),s=parseOff(ws.value),e=parseOff(we.value);
+  let err='';
+  if(isNaN(base)){ls.classList.add('err');err='Check log start format';}
+  else if(isNaN(s)){ws.classList.add('err');err='Check walk start';}
+  else if(isNaN(e)){we.classList.add('err');err='Check walk end';}
+  else if(e<=s){we.classList.add('err');err='Walk end must be after start';}
+  if(err){a.textContent=err;a.classList.add('e');return;}
+  a.textContent=fmt(base+s*1000);
+  b.textContent=fmt(base+e*1000);
+  c.textContent=fmt(base+(s+e)/2*1000);
+}
+function toCSV(){
+  const lines=['pass_id,log_start_utc,start_utc,end_utc,closest_approach_utc'];
+  rowsEl.querySelectorAll('tr').forEach(tr=>{
+    const a=tr.querySelector('.a'),b=tr.querySelector('.b'),c=tr.querySelector('.c');
+    if(!b.textContent)return;
+    lines.push([tr.querySelector('.id').value.trim(),tr.querySelector('.ls').value.trim(),a.textContent,b.textContent,c.textContent].join(','));
+  });
+  return lines.join('\n');
+}
+const msg=document.getElementById('msg');
+function say(t){msg.textContent=t;setTimeout(()=>msg.textContent='',2500);}
+document.getElementById('add').onclick=()=>addRow().querySelector('.id').focus();
+document.getElementById('clear').onclick=()=>{rowsEl.innerHTML='';addRow();};
+document.getElementById('copy').onclick=async()=>{
+  const t=toCSV();
+  if(t.split('\n').length<2){say('Nothing to copy yet');return;}
+  try{await navigator.clipboard.writeText(t);say('CSV copied');}
+  catch(_){
+    const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');say('CSV copied');}catch(__){say('Copy failed');}
+    ta.remove();
+  }
+};
+addRow();
+</script>
+</body>
+</html>
